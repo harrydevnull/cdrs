@@ -91,10 +91,9 @@ impl<'a, T: Authenticator + 'a> CDRS<T> {
         if start_response.opcode == Opcode::Authenticate {
             let body = start_response.get_body();
             let authenticator = body.get_authenticator().unwrap();
-            
-            match &self.authenticator.get_cassandra_name() {
-                Some(&auth) => {
-
+            let cass_name =  self.authenticator.get_cassandra_name();
+            match cass_name {
+                Some(auth) => {
                      if authenticator.as_str() == auth {
                         let auth_token_bytes = self.authenticator.get_auth_token().into_cbytes();
                         try!(self.transport.write(Frame::new_req_auth_response(auth_token_bytes).into_cbytes().as_slice()));
