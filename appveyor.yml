@@ -36,7 +36,9 @@ environment:
   matrix:
 
 ### MSVC Toolchains ###
-
+    - PYTHON: "C:\\Python27-x64"
+      cassandra_version: 3.0.5
+      ci_type: standard
   # Stable 64-bit MSVC
     - channel: stable
       target: x86_64-pc-windows-msvc
