@@ -109,7 +109,7 @@ install:
   - set PATH=%PATH%;%USERPROFILE%\.cargo\bin
   - rustc -vV
   - cargo -vV
-  - ps: appveyor.ps1
+  - ps: .\appveyor.ps1
 
 ## Build Script ##
 
