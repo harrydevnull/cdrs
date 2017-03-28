@@ -23,11 +23,19 @@ install:
   - (cargo install rustfmt || true)
   - PATH=$PATH:/home/travis/.cargo/bin
 
+# load travis-cargo
+before_script:
+  - |
+      pip install 'travis-cargo<0.2' --user &&
+      export PATH=$HOME/.local/bin:$PATH
 script:
   - cargo fmt -- --write-mode=diff
-  - cargo build --verbose
-  - cargo test --verbose
-
+  - |
+      travis-cargo build &&
+      travis-cargo test &&
+      travis-cargo bench &&
+      travis-cargo --only stable doc
+  
 addons:
   apt:
     packages:
@@ -44,18 +52,11 @@ addons:
 
 
 after_success:
-   wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz &&
-   tar xzf master.tar.gz &&
-   cd kcov-master &&
-   mkdir build &&
-   cd build &&
-   cmake .. &&
-   make &&
-   sudo make install &&
-   cd ../.. &&
-   rm -rf kcov-master &&
-   for file in target/debug/cdrs-*; do mkdir -p "target/cov/$(basename $file)"; kcov --exclude-pattern=/.cargo,/usr/lib --verify "target/cov/$(basename $file)" "$file"; done &&
-   bash <(curl -s https://codecov.io/bash) &&
-   rm -rf target/cov &&
-   for file in target/debug/cdrs-*; do mkdir -p "target/coverall/$(basename $file)"; kcov --coveralls-id=$TRAVIS_JOB_ID --exclude-pattern=/.cargo,/usr/lib --verify "target/coverall/$(basename $file)" "$file"; done &&
-   echo "Uploaded code coverage"
+ - travis-cargo coveralls --no-sudo --verify
+
+env:
+  global:
+    # override the default `--features unstable` used for the nightly branch (optional)
+    - TRAVIS_CARGO_NIGHTLY_FEATURE=nightly
+    # encrypted github token for doc upload (see `GH_TOKEN` link above)
+    - secure: "..." 
