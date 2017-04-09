@@ -29,7 +29,7 @@ pub trait AsRust<T> {
 
 /// Should be used to return a single column as Rust value by its name.
 pub trait IntoRustByName<R> {
-    fn get_by_name(&self, name: &str) -> Option<CDRSResult<R>>;
+    fn get_by_name(&self, name: &str) -> CDRSResult<Option<R>>;
 }
 
 /// Tries to converts u64 numerical value into array of n bytes.

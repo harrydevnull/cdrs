@@ -79,11 +79,11 @@ macro_rules! map_as_rust {
 macro_rules! into_rust_by_name {
     (Row, $($into_type:tt)*) => (
         impl IntoRustByName<$($into_type)*> for Row {
-            fn get_by_name(&self, name: &str) -> Option<Result<$($into_type)*>> {
+            fn get_by_name(&self, name: &str) -> Result<Option<$($into_type)*>> {
                 self.get_col_spec_by_name(name)
                     .map(|(col_spec, cbytes)| {
                         if cbytes.is_empty() {
-                            return Err(column_is_empty_err());
+                            return Ok(None);
                         }
 
                         let ref col_type = col_spec.col_type;
@@ -95,16 +95,16 @@ macro_rules! into_rust_by_name {
 
     (UDT, $($into_type:tt)*) => (
         impl IntoRustByName<$($into_type)*> for UDT {
-            fn get_by_name(&self, name: &str) -> Option<Result<$($into_type)*>> {
+            fn get_by_name(&self, name: &str) -> Result<Option<$($into_type)*>> {
                 self.data.get(name).map(|v| {
                     let &(ref col_type, ref bytes) = v;
 
                     if bytes.as_plain().is_empty() {
-                        return Err(column_is_empty_err());
+                        return Ok(None);
                     }
 
                     let converted = as_rust!(col_type, bytes, $($into_type)*);
-                    converted.map_err(|err| err.into())
+                    converted.map_err(|err| err.into()).map(|r|Some(r))
                 })
             }
         }

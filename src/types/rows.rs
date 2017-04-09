@@ -43,7 +43,7 @@ impl Row {
 }
 
 impl IntoRustByName<Vec<u8>> for Row {
-    fn get_by_name(&self, name: &str) -> Option<Result<Vec<u8>>> {
+    fn get_by_name(&self, name: &str) -> Result<Option<Vec<u8>>> {
         self.get_col_spec_by_name(name)
             .map(|(col_spec, cbytes)| {
                      let ref col_type = col_spec.col_type;
