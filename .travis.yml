@@ -1,5 +1,8 @@
 language: rust
 cache: cargo
+ directories
+  - $HOME/apache-cassandra-3.9
+
 rust:
   - stable
   - beta
