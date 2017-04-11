@@ -33,14 +33,13 @@ install:
   - PATH=$PATH:/home/travis/.cargo/bin
 
 script:
-  - cargo fmt -- --write-mode=diff
-  - cargo build --verbose
-  - cargo test --verbose
+
   - |
   travis-cargo clean &&
   travis-cargo build &&
   travis-cargo test &&
   travis-cargo bench 
+
 addons:
   apt:
     packages:
